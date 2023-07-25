@@ -30,3 +30,6 @@ Input data from
 Run `npm run convert` to convert the data. Output file is `./tb-cases_2021.csv`.
 Used in https://datatopics.worldbank.org/sdgatlas/goal-3-good-health-and-well-being#c12
 
+# input, output, code
+Input data from original sources, reformatted output data and R code for data preparation for the rest of the charts.
+
