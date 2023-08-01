@@ -40,6 +40,18 @@ dth.rate <- select(dt.yr.mth, country, iso3, cumul.excess.mean=excess.mean, expe
 write.csv(dth.rate, paste0(output.dir, "relative excess mortality by co.csv"), row.names=F,na="")
 
 
+# Number of deaths due to tuberculosis
+# https://datatopics.worldbank.org/sdgatlas/goal-3-good-health-and-well-being#c17
+# Data table directly received from WHO, saved in the input folder
+tub.dt <- read_excel(paste0(input.dir,"TB_data_download-WDI-2022-11-09.xlsx"),
+                     sheet="Aggregated data") %>%
+  filter(group_type=="global") %>%
+  select(Year=year, 
+         'Estimated number of deaths due to tuberculosis (all forms, excluding HIV)'=e_mort_exc_tbhiv_num)
+
+write.csv(tub.dt, paste0(output.dir, "tb-deaths_2021.csv"), row.names=F)
+
+
 # Estimated Malaria deaths by age group:
 # https://datatopics.worldbank.org/sdgatlas/goal-3-good-health-and-well-being/#c25
 # Data from WHO, Global health estimates: Leading causes of death 
@@ -73,6 +85,26 @@ all.rev <- gather(all, key=age, value=value, `0-28 days...10`:`70+ years...25`) 
   arrange(desc(year))
 
 write.csv(all.rev, paste0(output.dir, "Malaria deaths by age.csv"), row.names=F)
+
+
+# Estimated malaria mortality rate (per 100,000 population)
+# https://datatopics.worldbank.org/sdgatlas/goal-3-good-health-and-well-being#c23
+# Data from WHO Malaria report 2022, Annex 4F table
+# https://www.who.int/teams/global-malaria-programme/reports/world-malaria-report-2022
+mal.dt <- read_excel(paste0(input.dir,"WMR2022_Annex_4F.xlsx"), skip=3)
+names(mal.dt)[1] <- "area"
+names(mal.dt)[3] <- "pop"
+names(mal.dt)[8] <- "dth"
+
+# Find and extract world value 
+which (mal.dt$area == "Total") 
+
+mal.wld <- mal.dt[2516:2537,] %>%
+  mutate(rate=dth/pop*100000) %>%
+  select(Period=Year, 
+         'Estimated malaria mortality rate (per 100 000 population)'=rate)
+
+write.csv(mal.wld, paste0(output.dir,"Malaria mortality global.csv"), row.names=F)  
 
 
 # Immunization rates of one-year-old children: 
